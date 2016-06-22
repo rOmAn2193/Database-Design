@@ -1,0 +1,175 @@
+-- Integrity constraints (from text section 3.2)
+
+-- An integrity constraint (IC) is a condition specified on a database schema and 
+-- restricts the data that can be stored in an instance of the database.
+-- If a database instance satisfies all the integrity constraints specified 
+-- on the database schema, it is a legal instance.  
+-- A DBMS enforces integrity constraints, in that it permits only legal 
+-- instances to be stored in the database.
+
+-- Given a relation schema:
+-- Students(sid:string, name:string, login:string, age:integer, gpa:real)
+
+DROP TABLE Students
+
+CREATE TABLE Students (
+	sid CHAR(20),
+	name CHAR(20),
+	login CHAR(20),
+	age INTEGER,
+	gpa REAL
+)
+
+-- If we say that sid is the key for the relation Students
+-- A key is the minimum set of attributes that can uniquely identify a row
+-- A superkey is the minimum set plus one or more other attributes.
+
+-- We can add a key constraint to the table declaration
+
+DROP TABLE Students
+
+CREATE TABLE Students (
+	sid CHAR(20) /*NOT NULL*/,
+	name CHAR(20),
+	login CHAR(20),
+	DoB Date,
+	gpa REAL,
+	-- UNIQUE (sid),
+	CONSTRAINT StudentKey PRIMARY KEY (sid)
+)
+
+
+INSERT INTO 
+	Students(sid, name, login, DoB, gpa)
+VALUES 
+	(53690, 'Dobbs', 'jdobbs@ee', '2/10/2000', 0.0)
+
+-- Cannot insert duplicate key in object 'dbo.Students'
+INSERT INTO 
+	Students(sid, name, login, DoB, gpa)
+VALUES 
+	(53690, 'Dobbs', 'vdobbs@ee', '2/10/2001', 0.0)
+
+-- Fix the key and try the insert again
+INSERT INTO 
+	Students(sid, name, login, DoB, gpa)
+VALUES 
+	(53691, 'Dobbs', 'vdobbs@ee', '2/10/2001', 0.0)
+
+
+SELECT sid, name, login, DoB, gpa
+FROM Students
+
+
+-- Sometimes the information stored in a relation 
+-- is linked to the information stored in another relation
+
+-- Given another relation schema:
+-- Enrolled(cid:string, sid:string, grade:string)
+
+-- There is a relationship between Students and Enrolled
+-- Students are Enrolled.
+
+-- sid is a key in Students
+-- It doesn't make any sense to enroll a student that doesn't exist
+
+-- We can declare sid to be a Foreign Key in Enrolled
+-- Foreign keys must reference another relation.
+-- In the relation Enrolled, the Foreign Key sid references relation Students
+
+DROP TABLE Enrolled
+CREATE TABLE Enrolled(
+	cid CHAR(20),
+	sid CHAR(20),
+	grade CHAR(1),
+	PRIMARY KEY (sid, cid),
+	FOREIGN KEY (sid) REFERENCES Students
+)
+
+INSERT INTO 
+	Enrolled (cid, sid, grade)
+VALUES
+	('CSCI 460', 53690, 'A')
+
+-- The following INSERT statement conflicts with the FOREIGN KEY constraint "FK__Enrolled__sid__31EC6D26"
+INSERT INTO 
+	Enrolled (cid, sid, grade)
+VALUES
+	('CSCI 460', 53692, 'B')
+
+SELECT sid, name, login, DoB, gpa
+FROM Students
+
+SELECT cid, sid, grade
+FROM Enrolled
+
+INSERT INTO 
+	Enrolled (cid, sid, grade)
+VALUES
+	('CSCI 310', 53691, 'B')
+
+-- Cannot insert duplicate key in object 'dbo.Enrolled'
+INSERT INTO 
+	Enrolled (cid, sid, grade)
+VALUES
+	('CSCI 460', 53690, 'D')
+
+-- One of the "side effects" of foreign key constraints, 
+-- is that you can't drop a table being referenced by a FOREIGN KEY constraint
+-- Could not drop object 'Students' because it is referenced by a FOREIGN KEY constraint.
+DROP TABLE Students
+
+-- Enrolled must be dropped first
+DROP TABLE Enrolled
+
+-- Enforcing Integrity Constraints (from text section 3.3)
+
+-- So what if there is a row in Enrolled referencing
+-- a student in Students and that student is deleted from Students?
+-- SQL allows you to specify the action to be taken in a referencing relation
+-- CASCADE DELETE|UPDATE|INSERT 
+-- cascade the action from the referenced table into the referencing table
+
+
+
+-- General Constraints (from text section 3.2.3)
+-- Domain (CHECK) Constraint
+-- A constraint on the values that can be used in a column - domain
+DROP TABLE Students
+
+CREATE TABLE Students (
+	sid CHAR(20) /*NOT NULL*/,
+	name CHAR(20),
+	login CHAR(20),
+	DoB Date,
+	gpa REAL,
+	-- UNIQUE (sid),
+	CONSTRAINT StudentKey PRIMARY KEY (sid),
+	CONSTRAINT PositiveGpa CHECK (gpa > 0.0)
+)
+
+
+
+-- Querying Relational Data (from text section 3.4)
+-- The WHERE clause let's us specify criteria for selecting rows
+-- Many different operators in SQL depending on 
+-- the domain of the column being queried.
+-- This creates subsets based on the schema field domain.
+
+SELECT * 
+FROM Students
+WHERE DoB > '1/1/2001'
+
+SELECT * 
+FROM Students
+WHERE login LIKE 'jdobbs%'
+
+-- Information from different relations can also be combined
+SELECT S.name, E.cid, E.grade
+FROM Students S, Enrolled E
+WHERE S.sid = E.sid
+
+
+
+
+

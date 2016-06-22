@@ -1,0 +1,75 @@
+-- SQL LIKE operator
+-- LIKE (Transact-SQL) - https://msdn.microsoft.com/en-us/library/ms179859.aspx
+
+SELECT sname, rating, age 
+FROM Sailors 
+WHERE sname LIKE 'Andy'
+
+SELECT sname, rating, age 
+FROM Sailors 
+WHERE sname LIKE 'B%'
+
+SELECT sname, rating, age 
+FROM Sailors 
+WHERE sname LIKE '%or%'
+
+-- Expressions in SELECT statement
+-- Expressions of many different datatypes can be constructed as part of SELECT
+-- Expressions (Transact-SQL) - https://msdn.microsoft.com/en-us/library/ms190286.aspx
+
+SELECT * FROM Sailors, Reserves
+WHERE Sailors.sid = Reserves.sid
+
+-- Horatio would like to move his 9/5/2013 reservation to a week later
+
+-- Find the reservation
+SELECT sname, bid, day 
+FROM Sailors, Reserves
+WHERE Sailors.sid = Reserves.sid
+AND sname LIKE 'Horat%'
+AND day = '9/5/2013'
+
+-- Change the date by one week
+-- DATEADD (Transact-SQL) https://msdn.microsoft.com/en-us/library/ms186819.aspx
+SELECT sname, bid, DATEADD(WEEK, 1, day) as NewDay		-- NewDay is a computed column
+FROM Sailors, Reserves
+WHERE Sailors.sid = Reserves.sid
+AND sname LIKE 'Horat%'
+AND day = '9/5/2013'
+
+-- Change the date by one week
+SELECT sname, bid, DATEPART(weekday, DATEADD(WEEK, 1, day)) as NewDay_Day
+FROM Sailors, Reserves
+WHERE Sailors.sid = Reserves.sid
+AND sname LIKE 'Horat%'
+AND day = '9/5/2013'
+
+-- Also see String Functions (Transact-SQL) - https://msdn.microsoft.com/en-us/library/ms181984.aspx
+-- Write a query to return Sailors in upper case?
+
+-- UNION, INTERSECTION, DIFFERENCE
+-- UNION - https://msdn.microsoft.com/en-us/library/ms180026.aspx
+
+SELECT sname from Sailors
+WHERE sname LIKE '%a%'
+UNION
+SELECT sname from Sailors
+WHERE sname LIKE '%o%'
+
+-- EXCEPT and INTERSECT - https://msdn.microsoft.com/en-us/library/ms188055.aspx
+-- Using LIKE, and UNION, INTERSECT, OR EXCEPT...
+--Write a query to return sailors with names containing 'a' and 'o'
+SELECT sname from Sailors...
+
+-- Write a query to return sailors with names containing 'a' but not 'o'
+SELECT sname from Sailors...
+
+ 
+
+ 
+
+
+
+
+
+

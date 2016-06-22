@@ -1,0 +1,76 @@
+-- More example queries from the book
+
+-- Nested query examples
+
+-- (Q1) Find the names of sailors who have reserved boat 103 (using nested query)
+
+-- (Q2) Find the names of sailors who have reserved a red boat (using nested query)
+
+-- (Q21) Find the names of sailors who have not reserved a red boat (nested query)
+
+-- (Q1) Find the names of sailors who have reserved boat number 103 (using correlated nested query and EXISTS)
+
+-- (Q22) Find sailors whose rating is better than some sailor named called Horatio (try using > ANY)
+
+-- (Q23) Find sailors whose rating is better than every sailor called Horatio
+
+-- (Q24) Find the sailors with the highest rating
+
+-- (Q6) Find the names of sailors who have reserve both a red and green boat (using double nested query
+
+-- (Q9) Find the names of sailors who have reserved all boats (using correlated nested query with set difference - another implementation of division)
+
+-- Aggregate operators examples
+
+-- (Q25) Find the average rating of all sailors
+
+-- (Q26) Find the average age of sailors with a rating of 10
+
+-- (Q27) Find the name and age of the oldest sailor
+
+-- (Q28) Count the number of sailors
+
+-- (Q29) Count the number of different sailor names
+
+-- (Q30) Find the names of sailors who are older than the oldest sailor with a rating of 10
+
+-- GROUP BY and HAVING
+-- Aggregate operators can be computed for each value of a GROUP BY column
+-- Using GROUP BY we can apply aggregates to groups of data
+-- Like average gpa for students in different years (1, 2, 3,....) of CSCI
+-- Or batting average of baseball players by position (pitchers would be lowest)
+-- Or average income by a persons political affiliation
+SELECT * from Sailors ORDER BY rating
+SELECT rating, AVG(age) from Sailors GROUP BY rating
+
+-- (Q31) Find the age of the youngest sailor for each rating level
+
+-- HAVING acts as selection over groups
+-- That is, put a filter on the groups included in the aggregates
+-- Like batting average of baseball players by position not including pitchers
+
+SELECT rating, AVG(age) from Sailors GROUP BY rating HAVING rating > 7
+
+-- (Q32) Find the age of the youngest sailor who is eligible to vote (is at least 18 years old) 
+-- for each rating level with at least two such sailors)
+
+SELECT S.rating, MIN(S.age) AS minage	-- select minimum age within the group
+FROM Sailors S
+WHERE age >= 18
+GROUP BY rating			-- create groups of Sailors by rating
+HAVING COUNT (*) > 1	-- rating level group with at least two sailors
+
+-- (Q33) For each red boat, find the number of reservations for this boat
+
+-- (Q34) Find the average age of sailors for each rating level that has at least two sailors
+
+-- Expanded standard query form
+-- SELECT [DISTINCT] select-list
+-- FROM from-list
+-- WHERE qualification
+-- GROUP BY grouping-list
+-- HAVING group-qualification
+
+
+-- Using Group By also has a similar effect as DISTINCT
+-- Group By key or important columns to remove duplicates

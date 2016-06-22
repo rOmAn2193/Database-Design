@@ -1,0 +1,98 @@
+-- The following queries illustrate the translation from relational algebra to SQL:
+
+
+CREATE TABLE Sender (
+ id INTEGER,
+ name CHAR(20),
+ PRIMARY KEY (id)
+)
+--DROP TABLE Sender 
+--DELETE FROM Sender
+
+CREATE TABLE Receiver (
+ id INTEGER,
+ name CHAR(20),
+ PRIMARY KEY (id)
+)
+-- DROP TABLE Receiver
+-- DELETE FROM Receiver
+
+CREATE TABLE ValentineGreeting (
+ gid INTEGER,
+ greeting CHAR(50),
+ PRIMARY KEY (gid)
+)
+-- DROP TABLE ValentineGreeting
+-- DELETE FROM ValentineGreeting
+
+INSERT INTO 
+	Sender(id, name)
+VALUES 
+	(1, 'Wily Coyote'),
+	(2, 'Mr Peabody'),
+	(3, 'Gollum'),
+	(4, 'Bilbo')
+
+INSERT INTO 
+	Receiver(id, name)
+VALUES 
+	(1, 'Roadrunner'), 
+	(2, 'Sherman'), 
+	(3, 'The Ring'),
+	(4, 'Bilbo')
+
+INSERT INTO ValentineGreeting(gid, greeting)
+VALUES
+	(1, 'Stop, in the the name of love'),
+	(2, 'We will rewrite history in the WABAC machine'),
+	(3, 'Me precious')
+
+-- SELECTION
+SELECT * FROM ValentineGreeting
+SELECT * FROM ValentineGreeting WHERE gid > 1
+
+-- PROJECTION
+SELECT gid, greeting from ValentineGreeting
+SELECT greeting from ValentineGreeting WHERE gid > 1
+
+-- UNION
+SELECT * FROM Sender
+UNION 
+SELECT * FROM Receiver
+
+-- INTERSECTION
+SELECT * FROM Sender
+INTERSECT 
+SELECT * FROM Receiver
+
+-- SUBTRACTION
+SELECT * FROM Sender
+EXCEPT
+SELECT * FROM Receiver
+
+-- JOINS
+-- CROSS JOIN
+SELECT * FROM Sender, Receiver
+
+-- CONDITIONAL JOIN
+SELECT * FROM Sender s, Receiver r where s.id < r.id
+
+-- EQUI JOIN
+SELECT * FROM Sender s, Receiver r where s.id = r.id
+
+-- NATURAL JOIN
+SELECT * FROM Sender s, Receiver r where s.id = r.id and s.name = r.name
+
+-- EQUI JOIN
+SELECT * FROM Sender s, Receiver r, ValentineGreeting v
+where r.id = s.id and v.gid = s.id
+
+-- PROJECTION AND RENAME
+SELECT s.name as [From], r.name as [To], v.greeting as Greeting 
+FROM Sender s, Receiver r, ValentineGreeting v
+where r.id = s.id and v.gid = s.id
+
+SELECT s.name as [From], r.name as [To], v.greeting as Greeting 
+FROM Sender s, Receiver r, ValentineGreeting v
+
+ 

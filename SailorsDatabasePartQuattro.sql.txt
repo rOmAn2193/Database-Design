@@ -1,0 +1,119 @@
+-- Nested Queries and Aggregates
+-- Nested query - query with another query embedded (subquery)
+-- (not directly available in relational algebra, inspired by relational calculus)
+-- Subquery typically appears in the WHERE clause (can also appear in FROM clause)
+
+-- IN operator - test whether a value is in a set (https://msdn.microsoft.com/en-us/library/ms177682.aspx)
+SELECT sid, sname from Sailors
+WHERE sname LIKE '%a%'
+
+SELECT sid, sname from Sailors
+WHERE sid IN (32, 64, 71, 74, 85)
+
+SELECT sid, sname from Sailors
+WHERE sid IN (
+	SELECT sid from Sailors
+	WHERE sname LIKE '%a%'
+)
+
+SELECT sid, sname from Sailors
+WHERE sid IN (
+	SELECT sid 
+	FROM Reserves
+	WHERE bid = 103
+)
+
+-- Write a query using a sub-select and IN to return 
+-- bid's reserved by Sailors named Horatio, Brutus, and Andy
+SELECT bid ...
+
+-- (Q1) (using nested queries) Find the names of sailors who have reserved boat 103?
+
+-- (Q21) (using nested queries) Find the name of sailors who have not reserved a red boat?
+
+
+-- Correlated Nested Queries
+-- In previous queries, inner subquery was independent of outer query
+-- In correlated nested queries, inner subquery is dependent on current row in outer query
+
+-- EXISTS tests for existence of a row (https://msdn.microsoft.com/en-us/library/ms188336.aspx)
+SELECT sid, sname 
+from Sailors S
+WHERE EXISTS (
+	SELECT * 
+	FROM Reserves R
+	WHERE R.bid = 103
+	AND R.sid = S.sid -- evaluated for each current row in Sailors S
+)
+
+-- ANY Compares a scalar value with a single-column set of values. SOME and ANY are equivalent
+-- (https://msdn.microsoft.com/en-us/library/ms175064.aspx)
+
+SELECT sid, sname, rating
+from Sailors S
+WHERE S.rating > ANY (
+	SELECT S2.rating
+	FROM Sailors S2
+	WHERE S2.sname LIKE 'Horatio'
+)
+
+-- ALL Compares a scalar value with a single-column set of values.
+-- (https://msdn.microsoft.com/en-us/library/ms178543.aspx)
+-- (IN and NOT IN are equivalent to = ANY and <> ALL)
+
+SELECT sid, sname, rating
+from Sailors S
+WHERE S.rating > ALL (
+	SELECT S2.rating
+	FROM Sailors S2
+	WHERE S2.sname LIKE 'Horatio'
+)
+
+
+-- (Q1) (using correlated nested queries) Find the names of sailors who have reserved boat 103?
+
+-- (Q22) (using correlated nested queries) Find the name of sailors 
+-- whose rating is better than some sailor named Horatio?
+
+-- (Q24) (using correlated nested queries) Find the sailors with the highest rating?
+
+
+
+---------------------------------------
+-- Aggregate Operators - functions for computation or analysis
+-- COUNT ([DISTINCT] A) - the number of (unique) values in column 
+-- SUM ([DISTINCT] A) - the sum of all (unique) values in column A
+-- AVG ([DISTINCT] A) - the average of all (unique) values in column A
+-- MAX (A) - the maximum value in column A
+-- MIN (A) - the minimum value in column A
+
+SELECT AVG(age)
+FROM Sailors
+
+-- What does this query do?
+SELECT sid, sname 
+FROM Sailors S
+WHERE sid IN (
+	SELECT R.sid 
+	FROM Reserves R
+	WHERE R.day = (
+		SELECT MAX(R2.day)
+		FROM Reserves R2
+	)
+)
+
+
+
+
+ 
+
+
+
+
+ 
+
+
+
+
+
+

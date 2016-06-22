@@ -1,0 +1,56 @@
+﻿DROP INDEX IX_BoatColor ON Boats 
+CREATE INDEX IX_BoatColor ON Boats (color)
+DROP INDEX IX_SailorRating ON Sailors​
+CREATE INDEX IX_SailorRating on Sailors (rating)
+
+SELECT * FROM Sailors
+SELECT * FROM Reserves
+SELECT * FROM Boats
+
+SELECT 
+ S.sname, S.rating, S.age, 
+ R.[day],
+ B.bname, B.color
+FROM Sailors S, Reserves R, Boats B
+WHERE 
+ R.sid = S.sid AND
+ B.bid = R.bid AND
+ B.color = 'blue' AND
+ S.rating >= 7
+
+-- sql scripting 
+DECLARE @counter smallint;
+DECLARE @days smallint;
+SET @counter = 1;
+WHILE @counter < 1000
+BEGIN
+	SET @days = CEILING(100 * RAND())
+	INSERT INTO Reserves (sid, bid, day)
+	SELECT sid, bid, DATEADD(DAY, @days, GETDATE())
+	FROM Sailors, Boats
+	SELECT @@ROWCOUNT
+	SET @counter = @counter + 1
+END;
+GO
+
+SELECT sid
+FROM Sailors
+
+SELECT bid
+FROM Boats
+
+SELECT sid, bid --, DATEADD(DAY, 1, GETDATE())
+FROM Sailors, Boats
+
+
+ 
+
+ 
+
+ 
+SELECT *
+FROM RESERVES
+
+DELETE
+FROM RESERVES
+WHERE DAY >= '1/1/2014'

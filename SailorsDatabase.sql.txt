@@ -1,0 +1,159 @@
+-- Create a database (if you haven't already, open a query window in that database, and run the following statements.
+
+DROP TABLE Reserves
+DROP TABLE Sailors
+DROP TABLE Boats
+
+CREATE TABLE Sailors(
+ sid INTEGER,
+ sname CHAR(20),
+ rating INTEGER,
+ age REAL,
+ PRIMARY KEY (sid)
+)
+
+CREATE TABLE Boats(
+ bid INTEGER,
+ bname CHAR(20),
+ color CHAR(20),
+ PRIMARY KEY (bid)
+)
+
+CREATE TABLE Reserves(
+ sid INTEGER,
+ bid INTEGER,
+ day DATE,
+ FOREIGN KEY (sid) REFERENCES Sailors,
+ FOREIGN KEY (bid) REFERENCES Boats,
+ PRIMARY KEY (sid, bid, day)
+)
+
+INSERT INTO Sailors (sid, sname, rating, age)
+VALUES 
+	(22, 'Dustin', 7, 45.0),
+	(29, 'Brutus', 1, 33.0),
+	(31, 'Lubber', 8, 55.0),
+	(32, 'Andy', 8, 25.5),
+	(58, 'Rusty', 10, 35.0),
+	(64, 'Horatio', 7, 35.0),
+	(71, 'Zorba', 10, 16.0),
+	(74, 'Horatio', 9, 35.0),
+	(85, 'Art', 3, 25.5),
+	(95, 'Bob', 3, 63.5)
+
+INSERT INTO Boats(bid, bname, color)
+VALUES 
+	(101, 'Interlake', 'blue'),
+	(102, 'Interlake', 'red'),
+	(103, 'Clipper', 'green'),
+	(104, 'Marine', 'red')
+
+INSERT INTO Reserves (sid, bid, day)
+VALUES 
+	(22, 101, '10/10/2013'),
+	(22, 102, '10/10/2013'),
+	(22, 103, '10/8/2013'),
+	(22, 104, '10/7/2013'),
+	(31, 102, '11/10/2013'),
+	(31, 103, '11/6/2013'),
+	(31, 104, '11/12/2013'),
+	(64, 101, '9/5/2013'),
+	(64, 102, '9/8/2013'),
+	(74, 103, '9/8/2013')
+
+-- Confirm data in tables
+-- SELECT ALL FROM Reserves
+SELECT * FROM Reserves
+
+-- SELECT ALL FROM Sailors
+SELECT * FROM Sailors
+
+-- SELECT ALL FROM Boats
+SELECT * FROM Boats
+ 
+-- Form of basic SQL query
+-- (https://msdn.microsoft.com/query/dev10.query?appId=Dev10IDEF1&l=EN-US&k=k(SELECT_TSQL))
+
+--	SELECT [DISTINCT] select-list	-- project subset of columns to appear in resulting relation
+--	FROM from-list					-- specify table(s) to be queried
+--	WHERE qualification				-- selection criteria - what subset of rows are to be returned
+
+-- Query examples from book (in order of book appearance)
+
+-- (Q15) Find the names and ages of all sailors
+SELECT sname, age
+FROM sailors
+
+-- (Q11) Find all Sailors with a rating above 7
+SELECT *
+FROM sailors
+WHERE rating > 7
+
+
+-- (Q1) Find the names of sailors who have reserved boat number 103
+SELECT sname, day 
+FROM sailors AS s, reserves AS r
+WHERE s.sid = r.sid 
+and bid = 103
+
+
+-- (Q16) Find the sids of sailors who have reserved a red boat
+SELECT r.sid
+FROM /*sailors s,*/ reserves r, boats b
+where /*s.sid = r.sid
+and*/ r.bid = b.bid
+and b.color = 'red'
+
+-- (Q2) Find the names of sailors who have reserved a red boat
+SELECT s.sname
+FROM sailors s, reserves r, boats b
+where s.sid = r.sid
+and r.bid = b.bid
+and b.color = 'red'
+
+-- (Q3) Find the colors of boats reserved by Lubber
+SELECT b.color
+FROM sailors s, reserves r, boats b
+WHERE s.sid = r.sid
+and r.bid = b.bid
+and s.sname = 'Lubber'
+
+
+-- (Q4) Find the names of sailors who have reserved at least one boat
+SELECT s.sname
+FROM sailors s, reserves r
+WHERE s.sid = r.sid
+
+-- (Q17) Increment the ratings of persons who have sailed two different boats on the same day
+-- (that is display a rating that is one greater than their rating curently in the table)
+SELECT s.sname, s.rating + 1
+FROM sailors s, reserves r1, reserves r2
+where s.sid = r1.sid
+and s.sid = r2.sid
+and r1.bid <> r2.bid
+
+
+-- (Q5) Find the names of sailors who have reserved a red or a green boat
+-- (introduce union, intersection, difference)
+SELECT s.sid, s.sname, b.color
+FROM sailors s, reserves r, boats b
+WHERE s.sid = r.sid 
+and r.bid = b.bid
+and (b.color = 'red')
+UNION
+SELECT s.sid, s.sname, b.color
+FROM sailors s, reserves r, boats b
+WHERE s.sid = r.sid 
+and r.bid = b.bid
+and (b.color = 'green')
+
+
+-- (Q6) Find the names of sailors who have reserved both a red and a green boat
+
+-- (Q19) Find the sides of all sailors who have reserved red boats but not green boats
+-- (set-difference)
+
+-- (Q20) Find all sids of sailors who have a rating of 10 or reserved boat 104
+-- (union)
+
+-- More to follow.....

@@ -1,0 +1,87 @@
+-- Logical database design (from text section 3.5)
+
+-- Entity Sets to Tables (from text section 3.5.1)
+
+-- We created Entity - Relationship diagrams to model the data for an enterprise
+-- Let's look at the Entities Student and Class
+-- and the Relationship Enrolled
+
+-- Student --- Enrolled --- Class
+
+-- An entity is mapped to a relation, 
+-- each attribute of the entity set becomes an attribute of the the table,
+-- keys are declared directly from the diagram.
+
+DROP TABLE Students
+
+CREATE TABLE Students (
+	sid CHAR(20) /*NOT NULL*/,
+	name CHAR(20),
+	login CHAR(20),
+	DoB Date,
+	gpa REAL,
+	-- UNIQUE (sid),
+	CONSTRAINT StudentKey PRIMARY KEY (sid),
+	CONSTRAINT PositiveGpa CHECK (gpa > 0.0)
+)
+
+DROP TABLE Class
+
+CREATE TABLE Class (
+	cid CHAR (20),
+	dept CHAR (20),
+	title CHAR (40),
+	hrs INT
+	CONSTRAINT ClassKey PRIMARY KEY (cid)
+	CONSTRAINT PositiveHrs CHECK (hrs > 0)
+)
+
+INSERT INTO 
+	Class (cid, dept, title, hrs)
+VALUES
+	('CSCI 460', 'Computer Science', 'Database Design', 3)
+
+INSERT INTO 
+	Class (cid, dept, title, hrs)
+VALUES
+	('CSCI 310', 'Computer Science', 'Advanced Programming - C#', 2)
+
+-- Relationship Sets to Tables (from text section 3.5.2)
+-- Must identify each participating entity
+-- and any descriptive attributes.
+-- Set of non-descriptive attributes can be used as primary key
+
+DROP TABLE Enrolled
+CREATE TABLE Enrolled(
+	cid CHAR(20),		-- Primary key of class entity
+	sid CHAR(20),		-- Primary key of student entity
+	grade CHAR(1),		-- Descriptive attribute of Enrolled relationship
+	FOREIGN KEY (sid) REFERENCES Students,
+	FOREIGN KEY (cid) REFERENCES Class
+)
+
+INSERT INTO 
+	Enrolled (cid, sid, grade)
+VALUES
+	('CSCI 460', 53690, 'A')
+
+INSERT INTO 
+	Enrolled (cid, sid, grade)
+VALUES
+	('CSCI 310', 53691, 'B')
+
+-- Let's add a pre-requisite to our class entity with a relationship Must_Have_Taken
+
+-- But what if there's a key constraint
+-- Student --- Enrolled <-- Class
+-- Student can only enroll in a class once
+
+DROP TABLE Enrolled
+CREATE TABLE Enrolled(
+	cid CHAR(20),		-- Primary key of class entity
+	sid CHAR(20),		-- Primary key of student entity
+	grade CHAR(1),		-- Descriptive attribute of Enrolled relationship
+	PRIMARY KEY (sid, cid),		-- Ensures the combination of student and class are unique
+	FOREIGN KEY (sid) REFERENCES Students,
+	FOREIGN KEY (cid) REFERENCES Class
+)

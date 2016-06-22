@@ -1,0 +1,72 @@
+DROP TABLE Instructor
+DROP TABLE Members
+DROP TABLE Student
+DROP TABLE Request
+DROP TABLE Classes
+DROP TABLE Enrollment
+
+CREATE TABLE Instructor (
+  pid CHAR(20),
+  mid CHAR (20),
+  isMember BIT,
+  discipline CHAR(30),
+  CONSTRAINT InstructorsKey PRIMARY KEY (pid),
+  FOREIGN KEY (mid) REFERENCES Members
+);
+
+CREATE TABLE Members(
+  mid CHAR (20),
+  name CHAR (30),
+  address CHAR (30),
+  phonenum INTEGER,
+  email CHAR (30),
+  CONSTRAINT MembersKey PRIMARY KEY (mid)
+);
+
+CREATE TABLE Student(
+  sid CHAR (20),
+  mid CHAR (20),
+  name CHAR (30),
+  grants CHAR (30),
+  paymentmeth CHAR (20),
+  payment CHAR (20),
+  paydate TIMESTAMP,
+  isMember BIT,
+  PRIMARY KEY (sid),
+  FOREIGN KEY (mid) REFERENCES Members
+);
+
+CREATE TABLE Request(
+  rid CHAR(20),
+  cid CHAR(20),
+  priority INTEGER,
+  datereq TIMESTAMP,
+  PRIMARY KEY (rid),
+  FOREIGN KEY (cid) REFERENCES Classes
+);
+
+CREATE TABLE Classes(
+  cid CHAR(20),
+  title CHAR(30),
+  instructor CHAR (30),
+  location CHAR(30),
+  tme TIMESTAMP,
+  nsessions INTEGER,
+  minsize INTEGER,
+  maxsize INTEGER,
+  fee INTEGER,
+  CONSTRAINT CourseKey PRIMARY KEY (cid)
+);
+
+CREATE TABLE Enrollment(
+  cid CHAR(20) NOT NULL,
+  pid CHAR(20) NOT NULL,
+  mid CHAR(20) NOT NULL,
+  rid CHAR(20) NOT NULL,
+  location CHAR(30),
+  PRIMARY KEY (cid, pid, mid, rid),
+  FOREIGN KEY (cid) REFERENCES Class,
+  FOREIGN KEY (pid) REFERENCES Instructor,
+  FOREIGN KEY (mid) REFERENCES Members,
+  FOREIGN KEY (rid) REFERENCES Request
+);
